@@ -1,27 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <h:head>
-        <title>ログイン</title>
-    </h:head>
-    <h:body>
-        <h:form>
-            <h:panelGrid columns="3">
-            	<h:outputLabel>ユーザコード</h:outputLabel>
-                <h:inputText id="userCode" value="#{loginView.userCode}">
-                     <f:ajax execute="userCode" render="userCodeError" event="blur" />
-                </h:inputText>
-                <h:message for="userCode" id="userCodeError"/>
-                <h:outputLabel>パスワード</h:outputLabel>
-                <h:inputSecret id="password" value="#{loginView.password}"/>
-                <h:message for="password" />
-                <h:outputLabel>結果</h:outputLabel>
-                <h:outputText value="#{loginView.result}"/>
-
-            </h:panelGrid>
-            <h:commandButton value="ログイン" action="${loginView.login()}" />
-        </h:form>
-    </h:body>
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>ログイン</title>
+</h:head>
+<h:body>
+	<h:form>
+		<h:panelGrid columns="3">
+			<!-- JSFの部品  -->
+			<ui:remove>
+				<h:outputLabel>ユーザコード</h:outputLabel>
+				<h:inputText id="userCode" value="#{loginView.userCode}">
+					<f:ajax execute="userCode" render="userCodeError" event="blur" />
+				</h:inputText>
+				<h:message for="userCode" id="userCodeError" />
+				<h:outputLabel>パスワード</h:outputLabel>
+				<h:inputSecret id="password" value="#{loginView.password}" />
+				<h:message for="password" />
+				<h:outputLabel>結果</h:outputLabel>
+				<h:outputText value="#{loginView.result}" />
+			</ui:remove>
+			<!-- PrimeFacesの部品 -->
+			<p:outputLabel>ユーザコード</p:outputLabel>
+			<p:inputText id="userCode" value="#{loginView.userCode}">
+				<f:ajax execute="userCode" render="userCodeError" event="blur" />
+			</p:inputText>
+			<p:message for="userCode" id="userCodeError" />
+			<p:outputLabel>パスワード</p:outputLabel>
+			<p:password id="password" value="#{loginView.password}" />
+			<p:message for="password" />
+			<p:outputLabel>結果</p:outputLabel>
+			<h:outputText value="#{loginView.result}" />
+		</h:panelGrid>
+		<p:commandButton value="ログイン" action="${loginView.login()}" update="@form" />
+	</h:form>
+</h:body>
 </html>

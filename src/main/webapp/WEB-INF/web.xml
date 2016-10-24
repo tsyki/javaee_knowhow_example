@@ -10,4 +10,10 @@
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>/faces/*</url-pattern>
   </servlet-mapping>
+  <!-- xhtml中のHTMLコメントを無視するように。さもないとカラム指定のpanelGridなどでコメントも1要素として扱われて配置されてしまう -->
+  <context-param>
+    <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
 </web-app>
