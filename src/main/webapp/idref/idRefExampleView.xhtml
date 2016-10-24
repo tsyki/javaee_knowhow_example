@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:w="http://xmlns.jcp.org/jsf/composite/widget">
+<h:head>
+	<title>updateの指定方法の例</title>
+</h:head>
+<h:body>
+	<h:form>
+		<h:panelGrid columns="1">
+			<!-- input1:同じ部品内。そのままid指定 -->
+			<p:outputLabel>input1</p:outputLabel>
+			<p:inputText id="input1" value="#{idRefExampleView.input1}" />
+			<p:message for="input1" id="msg1" />
+
+			<!-- input2:異なる部品で親部品にidが付いているが、NamingContainerではないためidは変わらず、そのまま指定可能 -->
+			<h:panelGroup layout="block" id="block2">
+				<p:outputLabel>input2</p:outputLabel>
+				<p:inputText id="input2" value="#{idRefExampleView.input2}" />
+				<p:message for="input2" id="msg2_in" />
+			</h:panelGroup>
+
+			<!-- input3:複合部品はNamingContainerのためidは変わる。そのままinput3で指定はできない -->
+			<w:inputTextFlat id="block3" widgetId="input3" value="#{idRefExampleView.input3}" label="input3" />
+
+			<!-- input4:複合部品から参照される。input3と同様にそのままinput4を渡してもダメ -->
+			<p:outputLabel>input4</p:outputLabel>
+			<p:inputText id="input4" value="#{idRefExampleView.input4}" />
+			<p:message for="input4" id="msg4" />
+
+			<!-- input5:ネストした複合部品 -->
+			<w:inputTextOuter id="block5" widgetId="input5" value="#{idRefExampleView.input5}" label="input5" />
+		</h:panelGrid>
+
+		<p:outputLabel>msg2</p:outputLabel>
+		<p:message for="input2" id="msg2_out" />
+
+		<!-- NamingContainerが違うのでfor=input3では見えない -->
+		<p:outputLabel>msg3</p:outputLabel>
+		<p:message for="block3:input3" id="msg3" />
+
+		<!-- NamingContainerが違うため、input4では見えない。フルパスを渡してやる  -->
+		<!-- @formは直近のformタグを指す -->
+		<p:outputLabel>msg4</p:outputLabel>
+		<w:outerRefMessage for="@form:input4" />
+
+		<!-- ネストしている部品の中を参照。ネストしている分だけid指定してやる  -->
+		<p:outputLabel>msg5</p:outputLabel>
+		<p:message for="block5:block5:input5" id="msg5" />
+
+		<p:commandButton value="all" action="#{idRefExampleView.onProcess}"
+			process="@form" update="@form" />
+		<!-- 親のpanelGroupを更新すると内部も更新される -->
+		<p:commandButton value="block2" action="#{idRefExampleView.onProcess}"
+			process="block2" update="block2 msg2_in msg2_out" />
+		<!-- メッセージのみ更新 -->
+		<p:commandButton value="block2" action="#{idRefExampleView.onProcess}"
+			process="input2" update="msg2_in msg2_out" />
+	</h:form>
+</h:body>
+</html>
