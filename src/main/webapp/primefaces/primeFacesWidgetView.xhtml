@@ -30,7 +30,7 @@
             <p:message for="combo2" id="combo2Error" />
 
 			<p:outputLabel>結果</p:outputLabel>
-			<h:outputText value="#{primeFacesWidgetView.result}" />
+			<h:outputText id="result" value="#{primeFacesWidgetView.result}" />
 
 		</h:panelGrid>
 		<p:commandButton value="submit" action="#{primeFacesWidgetView.submit()}" update="@form" />
