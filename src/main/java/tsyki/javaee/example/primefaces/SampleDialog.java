@@ -9,16 +9,15 @@ import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
 
 /**
- * PrimeFacesの部品のサンプル
+ * PrimeFacesのダイアログのサンプル
  * @author TOSHIYUKI.IMAIZUMI
- * @since 2016/12/23
+ * @since 2016/12/24
  */
 @Named
 @RequestScoped
-public class PrimeFacesWidgetView {
+public class SampleDialog {
 
 	@NotNull
 	private Date date;
@@ -29,14 +28,17 @@ public class PrimeFacesWidgetView {
 	@NotNull
 	private String comboValue2;
 
-	private String dialogResult;
-
 	private String result;
 
 	public void submit(){
 		DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 		String dateString =  format.format(date);
 		result = dateString + " " + comboValue1 + " " + comboValue2;
+	}
+
+	public void closeDialog(){
+		submit();
+		RequestContext.getCurrentInstance().closeDialog(result);
 	}
 
 	public Date getDate() {
@@ -69,21 +71,5 @@ public class PrimeFacesWidgetView {
 
 	public void setResult(String result) {
 		this.result = result;
-	}
-
-	public String getDialogResult() {
-		return dialogResult;
-	}
-
-	public void setDialogResult(String dialogResult) {
-		this.dialogResult = dialogResult;
-	}
-
-	public void openDialog(){
-		RequestContext.getCurrentInstance().openDialog("/primefaces/sampleDialog");
-	}
-
-	public void onCloseDialog(SelectEvent event){
-		dialogResult = (String) event.getObject();
 	}
 }

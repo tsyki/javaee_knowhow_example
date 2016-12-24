@@ -6,43 +6,35 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
-	<title>PrimeFacesの部品サンプル</title>
+	<title>ダイアログサンプル</title>
 </h:head>
 <h:body>
-	<h:form id="widgetSampleForm">
+	<h:form id="dialogSampleForm">
 		<h:panelGrid columns="3">
 			<p:outputLabel>date</p:outputLabel>
-			<p:calendar id="date" value="#{primeFacesWidgetView.date}" pattern="yyyy/MM/dd"/>
+			<p:calendar id="date" value="#{sampleDialog.date}" pattern="yyyy/MM/dd"/>
 			<p:message for="date" id="dateError" />
 
 			<p:outputLabel>combo1</p:outputLabel>
-			<p:selectOneMenu id="combo1" value="#{primeFacesWidgetView.comboValue1}">
+			<p:selectOneMenu id="combo1" value="#{sampleDialog.comboValue1}">
             	<f:selectItem itemLabel="label1-1" itemValue="value1-1" />
             	<f:selectItem itemLabel="label1-2" itemValue="value1-2" />
             </p:selectOneMenu>
             <p:message for="combo1" id="combo1Error" />
 
 			<p:outputLabel>combo2</p:outputLabel>
-			<p:selectOneMenu id="combo2" value="#{primeFacesWidgetView.comboValue2}">
+			<p:selectOneMenu id="combo2" value="#{sampleDialog.comboValue2}">
             	<f:selectItem itemLabel="label2-1" itemValue="value2-1" />
             	<f:selectItem itemLabel="label2-2" itemValue="value2-2" />
             </p:selectOneMenu>
             <p:message for="combo2" id="combo2Error" />
 
-			<p:commandButton value="Open Dialog" icon="ui-icon-extlink"
-				actionListener="#{primeFacesWidgetView.openDialog}" process="@form" update="@form">
-				<p:ajax event="dialogReturn" listener="#{primeFacesWidgetView.onCloseDialog}"
-					update="dialogResult" />
-			</p:commandButton>
-			<h:outputText id="dialogResult" value="#{primeFacesWidgetView.dialogResult}" />
-			<p:message for="dialogResult" id="dialogResultError" />
-
-
 			<p:outputLabel>結果</p:outputLabel>
-			<h:outputText id="result" value="#{primeFacesWidgetView.result}" />
+			<h:outputText id="result" value="#{sampleDialog.result}" />
 
 		</h:panelGrid>
-		<p:commandButton value="submit" action="#{primeFacesWidgetView.submit()}" update="@form" />
+		<p:commandButton value="submit" action="#{sampleDialog.submit()}" update="@form" />
+		<p:commandButton value="close" action="#{sampleDialog.closeDialog()}" update="@form" />
 	</h:form>
 </h:body>
 </html>
