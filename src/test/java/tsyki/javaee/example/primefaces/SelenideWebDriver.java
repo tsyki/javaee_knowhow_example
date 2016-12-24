@@ -64,34 +64,40 @@ public class SelenideWebDriver {
 	 * @param value 設定する値
 	 */
 	public static void setTableTextValue(String tableId,int rowIndex,String headerText,String value){
-		SelenideElement targetCell = getTableElement(tableId, rowIndex, headerText);
-		// フォーカスを当ててセルエディタを表示させる
-		targetCell.click();
-		targetCell.$("input").setValue(value);
-		// フォーカスを外してセルエディタを閉じる
-		targetCell.closest("form").click();
+		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+			targetCell.$("input").setValue(value);
+		});
 	}
 
 	public static void setTableDateValue(String tableId,int rowIndex,String headerText,String value){
-		SelenideElement targetCell = getTableElement(tableId, rowIndex, headerText);
+		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+			SelenideElement calendarElem = targetCell.$(".ui-calendar");
+			setDateValue(calendarElem.getAttribute("id"), value);
+		});
+	}
+
+	public static void setTableComboValue(String tableId,int rowIndex,String headerText,String value){
+		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+			// コンボのルートとなる要素を取得
+			SelenideElement comboElem = targetCell.$(".ui-selectonemenu");
+			// 後は通常のコンボ入力と同じ
+			setComboValue(comboElem.getAttribute("id"), value);
+		});
+	}
+
+	public static void setTableValue(String tableId,int rowIndex,String headerText,ValueSetter valueSetter){
+		SelenideElement targetCell  =getTableElement(tableId, rowIndex, headerText);
 		// フォーカスを当ててセルエディタを表示させる
 		targetCell.click();
-		SelenideElement calendarElem = targetCell.$(".ui-calendar");
-		setDateValue(calendarElem.getAttribute("id"), value);
+		// 部品に値をセット
+		valueSetter.setValue(targetCell);
 		// フォーカスを外してセルエディタを閉じる
 		targetCell.closest("form").click();
 	}
 
-	public static void setTableComboValue(String tableId,int rowIndex,String headerText,String value){
-		SelenideElement targetCell  =getTableElement(tableId, rowIndex, headerText);
-		// フォーカスを当ててセルエディタを表示させる
-		targetCell.click();
-		// コンボのルートとなる要素を取得
-		SelenideElement comboElem = targetCell.$(".ui-selectonemenu");
-		// 後は通常のコンボ入力と同じ
-		setComboValue(comboElem.getAttribute("id"), value);
-		// フォーカスを外してセルエディタを閉じる
-		targetCell.closest("form").click();
+	@FunctionalInterface
+	private interface ValueSetter{
+		void setValue(SelenideElement targetCell);
 	}
 
 	public static void shouldTableText(String tableId,int rowIndex,String headerText,String value){
