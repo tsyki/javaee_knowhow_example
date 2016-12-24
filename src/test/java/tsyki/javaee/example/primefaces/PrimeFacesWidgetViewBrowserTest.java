@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -21,10 +22,14 @@ import com.codeborne.selenide.SelenideElement;
  */
 public class PrimeFacesWidgetViewBrowserTest {
 
-	@Test
-	public void 日付とコンボの入力(){
+	@Before
+	public void before(){
 		//NOTE -Dselenide.baseUrl=http://localhost:8080/javaee_knowhow_example/faces/ の想定
 		open("primefaces/primeFacesWidgetView.xhtml");
+	}
+
+	@Test
+	public void 日付とコンボの入力(){
 		setDateValue("widgetSampleForm:date", "2016/01/01");
 		setComboValue("widgetSampleForm:combo1", "value1-2");
 		setComboValue("widgetSampleForm:combo2", "value2-2");
@@ -35,7 +40,6 @@ public class PrimeFacesWidgetViewBrowserTest {
 
 	@Test
 	public void ダイアログ入力(){
-		open("primefaces/primeFacesWidgetView.xhtml");
 		setDateValue("widgetSampleForm:date", "2016/01/01");
 		// ダイアログオープン
 		clickButtonByIcon("ui-icon-extlink");
@@ -51,6 +55,37 @@ public class PrimeFacesWidgetViewBrowserTest {
 		switchTo().defaultContent();
 		// アサート
 		$(By.id("widgetSampleForm:dialogResult")).shouldHave(text("2016/01/02 value1-2 value2-2"));
+	}
+
+	@Test
+	public void テーブルセル入力(){
+		String headerText = "textValue";
+		String value = "hoge";
+		int rowIndex = 0;
+		SelenideElement tableRoot = $(By.id("widgetSampleForm:cellEditableTable"));
+		List<WebElement> headerElems = tableRoot.findElements(By.className("ui-column-title"));
+		int targetColIndexForSelector = -1;
+		for(int i=0;i<headerElems.size();i++){
+			WebElement headerElem = headerElems.get(i);
+			if(headerText.equals(headerElem.getText())){
+				// nth-of-typeで使うので+1
+				targetColIndexForSelector = i+1;
+				break;
+			}
+		}
+		// 目標の編集行
+		SelenideElement rowElem = tableRoot.$("tr[data-ri=\""+ rowIndex  + "\"]");
+		// ヘッダと同じカラムのセルをクリックしてセルエディタを起動
+		SelenideElement targetCell = rowElem.$("td:nth-of-type(" + targetColIndexForSelector + ")");
+		targetCell.click();
+		// この後は入力部品ごとに異なる処理
+		targetCell.$("input").setValue(value);
+		// フォーカスを外してセルエディタを閉じる
+		// 適当なところをクリックする
+		headerElems.iterator().next().click();
+		// targetCell.sendKeys("\t");
+		// アサート
+		targetCell.$(".ui-cell-editor-output").shouldHave(text(value));
 	}
 
 	private void clickButtonByIcon(String icon){
