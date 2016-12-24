@@ -2,12 +2,9 @@ package tsyki.javaee.example.primefaces;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
-import static tsyki.javaee.example.primefaces.SelenideWebDriver.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.codeborne.selenide.SelenideElement;
 
 /**
  * `PrimeFacesの部品を使った画面のブラウザテストサンプル
@@ -40,15 +37,13 @@ public class PrimeFacesWidgetViewBrowserTest {
 		// ダイアログオープン
 		widgetPage.openDialogButton.click();
 		// ダイアログのフレームを選択
-		SelenideElement dialogFrame = $("iframe[src*=\"sampleDialog\"]");
-		switchTo().frame(dialogFrame);
-		setDateValue("dialogSampleForm:date", "2016/01/02");
-		setComboValue("dialogSampleForm:combo1", "value1-2");
-		setComboValue("dialogSampleForm:combo2", "value2-2");
+		SampleDialogPage dialogPage = page(SampleDialogPage.class);
+		dialogPage.setDateValue("2016/01/02");
+		dialogPage.setCombo1Value("value1-2");
+		dialogPage.setCombo2Value("value2-2");
+		// NOTE もしここでダイアログのエレメントに触ってアサートする場合はswithToでフレームを変える必要がある
 		// ダイアログクローズ
-		clickButtonByIcon("fa-close");
-		// フレームを元に戻す
-		switchTo().defaultContent();
+		dialogPage.close();
 		// アサート
 		widgetPage.dialogResult.shouldHave(text("2016/01/02 value1-2 value2-2"));
 	}
