@@ -4,12 +4,10 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 import static tsyki.javaee.example.primefaces.SelenideWebDriver.*;
 
-import java.util.List;
-
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -57,33 +55,18 @@ public class PrimeFacesWidgetViewBrowserTest {
 
 	@Test
 	public void テーブルセル入力(){
-		String headerText = "textValue";
-		String value = "hoge";
-		int rowIndex = 0;
-		SelenideElement tableRoot = $(By.id("widgetSampleForm:cellEditableTable"));
-		List<WebElement> headerElems = tableRoot.findElements(By.className("ui-column-title"));
-		int targetColIndexForSelector = -1;
-		for(int i=0;i<headerElems.size();i++){
-			WebElement headerElem = headerElems.get(i);
-			if(headerText.equals(headerElem.getText())){
-				// nth-of-typeで使うので+1
-				targetColIndexForSelector = i+1;
-				break;
-			}
-		}
-		// 目標の編集行
-		SelenideElement rowElem = tableRoot.$("tr[data-ri=\""+ rowIndex  + "\"]");
-		// ヘッダと同じカラムのセルをクリックしてセルエディタを起動
-		SelenideElement targetCell = rowElem.$("td:nth-of-type(" + targetColIndexForSelector + ")");
-		targetCell.click();
-		// この後は入力部品ごとに異なる処理
-		targetCell.$("input").setValue(value);
-		// フォーカスを外してセルエディタを閉じる
-		// 適当なところをクリックする
-		headerElems.iterator().next().click();
-		// targetCell.sendKeys("\t");
-		// アサート
-		targetCell.$(".ui-cell-editor-output").shouldHave(text(value));
+		final String tableId = "widgetSampleForm:cellEditableTable";
+		setTableTextValue(tableId, 0, "textValue", "hoge");
+		setTableDateValue(tableId, 0, "date", "2016/1/3");
+		setTableComboValue(tableId, 0, "combo", "value1-2");
+
+		//アサート
+		shouldTableText(tableId, 0, "Id", "1");
+		shouldTableText(tableId, 0, "textValue", "hoge");
+		shouldTableText(tableId, 0, "date", "2016/01/03");
+		// XXX 本当はvalueと表示されている値は違うだろう
+		shouldTableText(tableId, 0, "combo", "value1-2");
 	}
+
 
 }
