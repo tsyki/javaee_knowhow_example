@@ -40,8 +40,7 @@ public class PrimeFacesWidgetViewBrowserTest {
 		// ダイアログオープン
 		clickButtonByIcon("ui-icon-extlink");
 		// ダイアログのフレームを選択
-		// TODO iframeのsrcを指定して特定したい
-		SelenideElement dialogFrame = $("iframe");
+		SelenideElement dialogFrame = $("iframe[src*=\"sampleDialog\"]");
 		switchTo().frame(dialogFrame);
 		setDateValue("dialogSampleForm:date", "2016/01/02");
 		setComboValue("dialogSampleForm:combo1", "value1-2");
