@@ -1,6 +1,5 @@
 package tsyki.javaee.example.primefaces;
 
-import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 import static org.junit.Assert.*;
 
@@ -19,11 +18,19 @@ import com.codeborne.selenide.SelenideElement;
  *
  */
 public class SelenideWebDriver {
+	public static void setDateValue(SelenideElement dateElem, String date){
+		setDateValue(dateElem.getAttribute("id"), date);
+	}
+
 	public static void setDateValue(String dateId, String date){
 		// NOTE 日付部品は中にidに_inputが付いたinput要素がある
 		$(By.id(dateId)).$("input").setValue(date);
 		// DatePickerを消しておく
 		$(By.className("ui-datepicker-current-day")).click();
+	}
+
+	public static void setComboValue(SelenideElement comboElem,String value){
+		setComboValue(comboElem.getAttribute("id"), value);
 	}
 
 	public static void setComboValue(String comboId,String value){
@@ -64,35 +71,59 @@ public class SelenideWebDriver {
 	 * @param value 設定する値
 	 */
 	public static void setTableTextValue(String tableId,int rowIndex,String headerText,String value){
-		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+		setTableTextValue($(By.id(tableId)), rowIndex, headerText, value);
+	}
+
+	/**
+	 * セル編集テーブルにテキストを入力する
+	 * @param tableElem 操作するテーブルのtable要素
+	 * @param rowIndex 編集する行番号(0始まり)
+	 * @param headerText 編集する列の列名
+	 * @param value 設定する値
+	 */
+	public static void setTableTextValue(SelenideElement tableElem,int rowIndex,String headerText,String value){
+		setTableValue(tableElem, rowIndex, headerText, (targetCell) ->{
 			targetCell.$("input").setValue(value);
 		});
 	}
 
 	public static void setTableDateValue(String tableId,int rowIndex,String headerText,String value){
-		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+		setTableDateValue($(By.id(tableId)), rowIndex, headerText, value);
+	}
+
+	public static void setTableDateValue(SelenideElement tableElem,int rowIndex,String headerText,String value){
+		setTableValue(tableElem, rowIndex, headerText, (targetCell) ->{
 			SelenideElement calendarElem = targetCell.$(".ui-calendar");
-			setDateValue(calendarElem.getAttribute("id"), value);
+			setDateValue(calendarElem, value);
 		});
 	}
 
 	public static void setTableComboValue(String tableId,int rowIndex,String headerText,String value){
-		setTableValue(tableId, rowIndex, headerText, (targetCell) ->{
+		setTableComboValue($(By.id(tableId)), rowIndex, headerText, value);
+	}
+
+	public static void setTableComboValue(SelenideElement tableElem,int rowIndex,String headerText,String value){
+		setTableValue(tableElem, rowIndex, headerText, (targetCell) ->{
 			// コンボのルートとなる要素を取得
 			SelenideElement comboElem = targetCell.$(".ui-selectonemenu");
 			// 後は通常のコンボ入力と同じ
-			setComboValue(comboElem.getAttribute("id"), value);
+			setComboValue(comboElem, value);
 		});
 	}
 
-	public static void setTableValue(String tableId,int rowIndex,String headerText,ValueSetter valueSetter){
-		SelenideElement targetCell  =getTableElement(tableId, rowIndex, headerText);
+	public static void setTableValue(SelenideElement tableElem,int rowIndex,String headerText,ValueSetter valueSetter){
+		SelenideElement targetCell  =getTableElement(tableElem, rowIndex, headerText);
 		// フォーカスを当ててセルエディタを表示させる
 		targetCell.click();
 		// 部品に値をセット
 		valueSetter.setValue(targetCell);
 		// フォーカスを外してセルエディタを閉じる
 		targetCell.closest("form").click();
+
+	}
+
+	public static void setTableValue(String tableId,int rowIndex,String headerText,ValueSetter valueSetter){
+		setTableValue($(By.id(tableId)), rowIndex, headerText, valueSetter);
 	}
 
 	@FunctionalInterface
@@ -100,21 +131,29 @@ public class SelenideWebDriver {
 		void setValue(SelenideElement targetCell);
 	}
 
-	public static void shouldTableText(String tableId,int rowIndex,String headerText,String value){
-		SelenideElement targetCell = getTableElement(tableId, rowIndex, headerText);
+	public static SelenideElement getTableOutputElement(String tableId,int rowIndex,String headerText){
+		return getTableOutputElement($(By.id(tableId)), rowIndex, headerText);
+	}
+
+	public static SelenideElement getTableOutputElement(SelenideElement tableElem,int rowIndex,String headerText){
+		SelenideElement targetCell = getTableElement(tableElem, rowIndex, headerText);
 		// セルエディタを使っていない場合はtargetCellのinnerTextが表示されている値
 		SelenideElement cellEditorOutputCell =targetCell.$(".ui-cell-editor-output");
 		if(cellEditorOutputCell.exists()){
-			cellEditorOutputCell.shouldHave(text(value));
+			return cellEditorOutputCell;
 		}
 		// セルエディタなしならtargetCellのinnerTextが表示されている値
 		else{
-			targetCell.shouldHave(text(value));
+			return targetCell;
 		}
 	}
 
 	public static SelenideElement getTableElement(String tableId,int rowIndex,String headerText){
 		SelenideElement tableRoot = $(By.id(tableId));
+		return getTableElement(tableRoot, rowIndex, headerText);
+	}
+
+	public static SelenideElement getTableElement(SelenideElement tableRoot,int rowIndex,String headerText){
 		// カラムヘッダを取得
 		List<WebElement> headerElems = tableRoot.findElements(By.className("ui-column-title"));
 		int targetColIndexForSelector = -1;

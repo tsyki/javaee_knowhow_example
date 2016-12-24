@@ -5,9 +5,7 @@ import static com.codeborne.selenide.Selenide.*;
 import static tsyki.javaee.example.primefaces.SelenideWebDriver.*;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -18,27 +16,29 @@ import com.codeborne.selenide.SelenideElement;
  */
 public class PrimeFacesWidgetViewBrowserTest {
 
+	private PrimeFacesWidgetViewPage widgetPage;
+
 	@Before
 	public void before(){
 		//NOTE -Dselenide.baseUrl=http://localhost:8080/javaee_knowhow_example/faces/ の想定
-		open("primefaces/primeFacesWidgetView.xhtml");
+		widgetPage =  open("primefaces/primeFacesWidgetView.xhtml", PrimeFacesWidgetViewPage.class);
 	}
 
 	@Test
 	public void 日付とコンボの入力(){
-		setDateValue("widgetSampleForm:date", "2016/01/01");
-		setComboValue("widgetSampleForm:combo1", "value1-2");
-		setComboValue("widgetSampleForm:combo2", "value2-2");
-		clickButtonByIcon("fa-edit");
+		widgetPage.setDateValue("2016/01/01");
+		widgetPage.setCombo1Value("value1-2");
+		widgetPage.setCombo2Value("value2-2");
+		widgetPage.submitButton.click();
 		// アサート
-		$(By.id("widgetSampleForm:result")).shouldHave(text("2016/01/01 value1-2 value2-2"));
+		widgetPage.result.shouldHave(text("2016/01/01 value1-2 value2-2"));
 	}
 
 	@Test
 	public void ダイアログ入力(){
-		setDateValue("widgetSampleForm:date", "2016/01/01");
+		widgetPage.setDateValue("2016/01/01");
 		// ダイアログオープン
-		clickButtonByIcon("ui-icon-extlink");
+		widgetPage.openDialogButton.click();
 		// ダイアログのフレームを選択
 		SelenideElement dialogFrame = $("iframe[src*=\"sampleDialog\"]");
 		switchTo().frame(dialogFrame);
@@ -50,22 +50,21 @@ public class PrimeFacesWidgetViewBrowserTest {
 		// フレームを元に戻す
 		switchTo().defaultContent();
 		// アサート
-		$(By.id("widgetSampleForm:dialogResult")).shouldHave(text("2016/01/02 value1-2 value2-2"));
+		widgetPage.dialogResult.shouldHave(text("2016/01/02 value1-2 value2-2"));
 	}
 
 	@Test
 	public void テーブルセル入力(){
-		final String tableId = "widgetSampleForm:cellEditableTable";
-		setTableTextValue(tableId, 0, "textValue", "hoge");
-		setTableDateValue(tableId, 0, "date", "2016/1/3");
-		setTableComboValue(tableId, 0, "combo", "value1-2");
+		widgetPage.setEditableTableTextValue(0, "hoge");
+		widgetPage.setEditableTableDateValue(0, "2016/01/03");
+		widgetPage.setEditableTableComboValue(0, "value1-2");
 
 		//アサート
-		shouldTableText(tableId, 0, "Id", "1");
-		shouldTableText(tableId, 0, "textValue", "hoge");
-		shouldTableText(tableId, 0, "date", "2016/01/03");
+		widgetPage.getEditableTableIdElement(0).shouldHave(text("1"));
+		widgetPage.getEditableTableTextElement(0).shouldHave(text("hoge"));
+		widgetPage.getEditableTableDateElement(0).shouldHave(text("2016/01/03"));
 		// XXX 本当はvalueと表示されている値は違うだろう
-		shouldTableText(tableId, 0, "combo", "value1-2");
+		widgetPage.getEditableTableComboElement(0).shouldHave(text("value1-2"));
 	}
 
 
