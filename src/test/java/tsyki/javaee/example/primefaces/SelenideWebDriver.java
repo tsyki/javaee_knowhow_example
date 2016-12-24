@@ -20,8 +20,8 @@ import com.codeborne.selenide.SelenideElement;
  */
 public class SelenideWebDriver {
 	public static void setDateValue(String dateId, String date){
-		// NOTE 日付部品はidに_inputが付いたものが実際のinput要素
-		$(By.id(dateId + "_input")).setValue(date);
+		// NOTE 日付部品は中にidに_inputが付いたinput要素がある
+		$(By.id(dateId)).$("input").setValue(date);
 		// DatePickerを消しておく
 		$(By.className("ui-datepicker-current-day")).click();
 	}
@@ -73,8 +73,13 @@ public class SelenideWebDriver {
 	}
 
 	public static void setTableDateValue(String tableId,int rowIndex,String headerText,String value){
-		// NOTE id指定なしならやることはテキスト入力と変わらない
-		setTableTextValue(tableId, rowIndex, headerText, value);
+		SelenideElement targetCell = getTableElement(tableId, rowIndex, headerText);
+		// フォーカスを当ててセルエディタを表示させる
+		targetCell.click();
+		SelenideElement calendarElem = targetCell.$(".ui-calendar");
+		setDateValue(calendarElem.getAttribute("id"), value);
+		// フォーカスを外してセルエディタを閉じる
+		targetCell.closest("form").click();
 	}
 
 	public static void setTableComboValue(String tableId,int rowIndex,String headerText,String value){
