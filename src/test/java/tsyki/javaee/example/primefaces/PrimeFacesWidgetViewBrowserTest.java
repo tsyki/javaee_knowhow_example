@@ -28,9 +28,34 @@ public class PrimeFacesWidgetViewBrowserTest {
 		setDateValue("widgetSampleForm:date", "2016/01/01");
 		setComboValue("widgetSampleForm:combo1", "value1-2");
 		setComboValue("widgetSampleForm:combo2", "value2-2");
-		$("button[type=submit]").click();
+		clickButtonByIcon("fa-edit");
 		// アサート
 		$(By.id("widgetSampleForm:result")).shouldHave(text("2016/01/01 value1-2 value2-2"));
+	}
+
+	@Test
+	public void ダイアログ入力(){
+		open("primefaces/primeFacesWidgetView.xhtml");
+		setDateValue("widgetSampleForm:date", "2016/01/01");
+		// ダイアログオープン
+		clickButtonByIcon("ui-icon-extlink");
+		// ダイアログのフレームを選択
+		// TODO iframeのsrcを指定して特定したい
+		SelenideElement dialogFrame = $("iframe");
+		switchTo().frame(dialogFrame);
+		setDateValue("dialogSampleForm:date", "2016/01/02");
+		setComboValue("dialogSampleForm:combo1", "value1-2");
+		setComboValue("dialogSampleForm:combo2", "value2-2");
+		// ダイアログクローズ
+		clickButtonByIcon("fa-close");
+		// フレームを元に戻す
+		switchTo().defaultContent();
+		// アサート
+		$(By.id("widgetSampleForm:dialogResult")).shouldHave(text("2016/01/02 value1-2 value2-2"));
+	}
+
+	private void clickButtonByIcon(String icon){
+		$("button ." + icon).click();
 	}
 
 	private void setDateValue(String dateId, String date){
