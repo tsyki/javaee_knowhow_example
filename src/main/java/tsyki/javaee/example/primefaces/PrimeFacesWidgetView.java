@@ -2,8 +2,11 @@ package tsyki.javaee.example.primefaces;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
@@ -31,7 +34,21 @@ public class PrimeFacesWidgetView {
 
 	private String dialogResult;
 
+	private List<RowModel> cellEditableTableModel = new ArrayList<>();
+
 	private String result;
+
+	@PostConstruct
+	public void init(){
+		RowModel rowModel1 = new RowModel();
+		rowModel1.setId(1L);
+		cellEditableTableModel.add(rowModel1);
+
+		RowModel rowModel2 = new RowModel();
+		rowModel2.setId(2L);
+		cellEditableTableModel.add(rowModel2);
+
+	}
 
 	public void submit(){
 		DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
@@ -77,6 +94,14 @@ public class PrimeFacesWidgetView {
 
 	public void setDialogResult(String dialogResult) {
 		this.dialogResult = dialogResult;
+	}
+
+	public List<RowModel> getCellEditableTableModel() {
+		return cellEditableTableModel;
+	}
+
+	public void setCellEditableTableModel(List<RowModel> cellEditableTableModel) {
+		this.cellEditableTableModel = cellEditableTableModel;
 	}
 
 	public void openDialog(){
